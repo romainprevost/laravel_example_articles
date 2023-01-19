@@ -17,8 +17,7 @@ class ArticleController extends Controller
 
         // On retourne les articles avec ou sans pagination
         return Article::with('user')
-            ->whereNull('published_at')
-            ->orWhere('published_at', '<=', now())
+            ->published()
             ->latest()
             ->with('tags')
             ->paginate(10)
