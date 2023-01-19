@@ -37,4 +37,7 @@ Route::middleware('auth')->group(function() {
     Route::get('article/{article}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('article.show');
     Route::put('article/{article}', [\App\Http\Controllers\ArticleController::class, 'update'])->name('article.update');
     Route::delete('article/{article}', [\App\Http\Controllers\ArticleController::class, 'destroy'])->name('article.destroy');
+
+    // "Invokable controller" CurrentUserArticlesController n'a qu'une seule méthode __invoke qui sera appelée par la route
+    Route::get('my_articles', \App\Http\Controllers\CurrentUserArticlesController::class);
 });
