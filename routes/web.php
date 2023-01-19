@@ -29,3 +29,12 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Les routes articles
+Route::get('article', [\App\Http\Controllers\ArticleController::class, 'index'])->name('article.index');
+Route::middleware('auth')->group(function() {
+    Route::post('article', [\App\Http\Controllers\ArticleController::class, 'store'])->name('article.store');
+    Route::get('article/{article}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('article.show');
+    Route::put('article/{article}', [\App\Http\Controllers\ArticleController::class, 'update'])->name('article.update');
+    Route::delete('article/{article}', [\App\Http\Controllers\ArticleController::class, 'destroy'])->name('article.destroy');
+});
