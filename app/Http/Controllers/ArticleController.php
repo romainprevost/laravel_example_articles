@@ -25,8 +25,9 @@ class ArticleController extends Controller
 //        Identique à:
 //        return Article::with('user', 'tags')
 //            ->where('published_at', '<=', now())
-//            ->latest('published_at') ou ->orderByDesc('published_at')
+//            ->orderByDesc('published_at') // ou ->orderByDesc('published_at')
 //            ->take(10)
+//            ->skip(request()->has('page') ? (request()->input('page') - 1) * 10 : 0)
 //            ->get();
 
         // La pagination permet de gérer automatiquement le changement de page via un paramètre page dans l'objet Request

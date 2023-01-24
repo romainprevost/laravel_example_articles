@@ -60,4 +60,27 @@ class ListArticlesTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals($article->id, $response->json('data')[0]['id']);
     }
+
+    public function test_list_articles_uses_pagination()
+    {
+        $perPage = 10;
+
+        // On crée 20 articles avec des dates de publiclation différentes qui seront dans le passé (il y a 1 jour)
+        /** @var User $user */
+        $articles = Article::factory()
+            ->count(20)
+            ->state(new Sequence(
+                fn ($sequence) => ['published_at' => now()->subDay()->addSeconds($sequence->index)],
+            ))
+            ->create()
+            ->sortByDesc('published_at')
+            ->skip($perPage)
+            ->take($perPage);
+
+        $response = $this->get(action([ArticleController::class, 'index'], ['page' => 2]))->assertOk();
+
+        $returnedArticles = $response->json('data');
+
+        $this->assertEquals($articles->pluck('id'), collect($returnedArticles)->pluck('id'));
+    }
 }
