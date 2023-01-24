@@ -16,15 +16,14 @@ class ArticleController extends Controller
         // Eloquent ne fera que 2 requêtes SQL
 
         // On retourne les articles avec ou sans pagination
-        return Article::with('user')
+        return Article::with('user', 'tags')
             ->latest('published_at')
             ->published() // Il s'agit d'un query scope qui permet d'extraire une contrainte sur la requête SQL directement dans le modèle
-            ->with('tags')
             ->paginate(10)
         ;
 
 //        Identique à:
-//        return Article::with('user')
+//        return Article::with('user', 'tags')
 //            ->where('published_at', '<=', now())
 //            ->latest('published_at') ou ->orderByDesc('published_at')
 //            ->take(10)
