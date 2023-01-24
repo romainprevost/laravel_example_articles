@@ -6,6 +6,7 @@ use App\Http\Controllers\ArticleController;
 use App\Models\Article;
 use App\Models\Tag;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -31,9 +32,13 @@ class CreateArticleTest extends TestCase
     {
         $article = Article::factory()->make();
         $user = User::factory()->create();
+        $now = Carbon::now()->roundSecond(); // pour éviter une erreur de millisecondes
+
+        Carbon::setTestNow($now);
+
         $this
             ->actingAs($user)
-            ->post(action([ArticleController::class, 'store']), $article->toArray())
+            ->post(action([ArticleController::class, 'store']), $article->only('title', 'content')) // Le frontend n'enverra pas published_at si la valeur est null
             ->assertCreated();
 
         $articles = $user->articles()->get();
@@ -41,7 +46,7 @@ class CreateArticleTest extends TestCase
         $this->assertCount(1, $articles);
         $this->assertEquals($article->title, $articles[0]->title);
         $this->assertEquals($article->content, $articles[0]->content);
-        $this->assertNull($articles[0]->published_at);
+        $this->assertEquals($now, $articles[0]->published_at);
     }
     public function test_user_can_create_an_article_to_be_published()
     {
@@ -92,7 +97,7 @@ class CreateArticleTest extends TestCase
         $this
             ->actingAs($article->user)
             ->post(action([ArticleController::class, 'store']), [
-                ...$article->toArray(),
+                ...$article->only('title', 'content'),
                 'tags' => $tags->pluck('id')
             ]);
 

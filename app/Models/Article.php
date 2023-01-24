@@ -28,8 +28,6 @@ class Article extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query
-            ->whereNull('published_at')
-            ->orWhere('published_at', '<=', now());
+        return $query->where('published_at', '<=', now());
     }
 }

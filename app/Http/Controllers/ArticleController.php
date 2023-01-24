@@ -17,18 +17,21 @@ class ArticleController extends Controller
 
         // On retourne les articles avec ou sans pagination
         return Article::with('user')
-            ->published()
-            ->latest()
+            ->latest('published_at')
+            ->published() // Il s'agit d'un query scope qui permet d'extraire une contrainte sur la requête SQL directement dans le modèle
             ->with('tags')
             ->paginate(10)
         ;
 
+//        Identique à:
 //        return Article::with('user')
-//            ->whereNull('published_at')
-//            ->orWhere('published_at', '<=', now())
-//            ->latest()
+//            ->where('published_at', '<=', now())
+//            ->latest('published_at') ou ->orderByDesc('published_at')
 //            ->take(10)
 //            ->get();
+
+        // La pagination permet de gérer automatiquement le changement de page via un paramètre page dans l'objet Request
+        // si il est présent Laravel l'utilisera pour fixer l'offset de la requête
     }
 
     public function show(Article $article)
@@ -42,7 +45,7 @@ class ArticleController extends Controller
         $validated = $request->validate([
             'title'        => ['bail', 'required', 'string'],
             'content'      => ['bail', 'required', 'string'],
-            'published_at' => ['nullable', 'date'],
+            'published_at' => ['date'],
             'tags.*'         => ['exists:' . Tag::class . ',id'], // the tag ids should exist in tags table
         ]);
 
@@ -50,7 +53,7 @@ class ArticleController extends Controller
         $article = new Article();
         $article->title = $request->input('title');
         $article->content = $request->input('content');
-        $article->published_at = $request->input('published_at', null);
+        $article->published_at = $request->input('published_at', now());
 
         // On peut associer l'article que l'on crée à l'utilisateur directement en utilisant la relation
         // comme ça il n'est pas nécessaire de savoir le nom de la colonne sur laquelle la relation se fait

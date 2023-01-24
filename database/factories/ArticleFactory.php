@@ -20,7 +20,7 @@ class ArticleFactory extends Factory
         return [
             'title'        => fake()->sentence(),
             'content'      => fake()->paragraph(),
-            'published_at' => null,
+            'published_at' => now(),
             'user_id'      => User::factory(),
         ];
     }

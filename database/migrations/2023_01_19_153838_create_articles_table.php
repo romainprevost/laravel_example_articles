@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->timestamp('published_at')->nullable();
+            $table->timestamp('published_at')->useCurrent();
             // foreignIdFor utilise le model User pour déduire la clé étrangère,
             // constrained permet de créer un index sur cette colonne et force l'existence d'un utilisateur au niveau
             //de la base de données

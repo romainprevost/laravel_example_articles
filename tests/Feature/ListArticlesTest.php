@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\CurrentUserArticlesController;
 use App\Models\Article;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -24,11 +24,15 @@ class ListArticlesTest extends TestCase
     {
         $perPage = 10;
 
+        // On crée 20 articles avec des dates de publiclation différentes qui seront dans le passé (il y a 1 jour)
         /** @var User $user */
         $articles = Article::factory()
-            ->count(15)
+            ->count(20)
+            ->state(new Sequence(
+                fn ($sequence) => ['published_at' => now()->subDay()->addSeconds($sequence->index)],
+            ))
             ->create()
-            ->sortByDesc('created_at')
+            ->sortByDesc('published_at')
             ->take($perPage);
 
         $response = $this->get(action([ArticleController::class, 'index']))->assertOk();
